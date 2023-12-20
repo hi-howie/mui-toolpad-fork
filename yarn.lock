@@ -2801,7 +2801,7 @@
   resolved "https://registry.yarnpkg.com/@ungap/structured-clone/-/structured-clone-1.2.0.tgz#756641adb587851b5ccb3e095daf27ae581c8406"
   integrity sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==
 
-"@vitejs/plugin-react@4.2.1":
+"@vitejs/plugin-react@4.2.1", "@vitejs/plugin-react@^4.2.1":
   version "4.2.1"
   resolved "https://registry.yarnpkg.com/@vitejs/plugin-react/-/plugin-react-4.2.1.tgz#744d8e4fcb120fc3dbaa471dadd3483f5a304bb9"
   integrity sha512-oojO9IDc4nCUUi8qIR11KoQm0XFFLIwsRBwHRR4d/88IWghn1y6ckz/bJ8GHDCsYEJee8mDzqtJxh15/cisJNQ==
@@ -6796,7 +6796,7 @@ gm@1.25.0:
     cross-spawn "^4.0.0"
     debug "^3.1.0"
 
-google-auth-library@9.4.1, google-auth-library@^9.0.0:
+google-auth-library@*, google-auth-library@9.4.1, google-auth-library@^9.0.0:
   version "9.4.1"
   resolved "https://registry.yarnpkg.com/google-auth-library/-/google-auth-library-9.4.1.tgz#dea32cbdae0a47066995a379e6873c52926ea80e"
   integrity sha512-Chs7cuzDuav8W/BXOoRgSXw4u0zxYtuqAHETDR5Q6dG1RwNwz7NUKjsDDHAsBV3KkiiJBtJqjbzy1XU1L41w1g==
@@ -13159,7 +13159,7 @@ vite-node@1.0.4:
     picocolors "^1.0.0"
     vite "^5.0.0"
 
-vite@5.0.10, vite@^5.0.0:
+vite@5.0.10, vite@^5.0.0, vite@^5.0.10:
   version "5.0.10"
   resolved "https://registry.yarnpkg.com/vite/-/vite-5.0.10.tgz#1e13ef5c3cf5aa4eed81f5df6d107b3c3f1f6356"
   integrity sha512-2P8J7WWgmc355HUMlFrwofacvr98DAjoE52BfdbwQtyLH06XKwaL/FMnmKM2crF0iX4MpmMKoDlNCB1ok7zHCw==
