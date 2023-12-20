@@ -661,14 +661,19 @@ function useElmToolpadComponent(elm: appDom.ElementNode): ToolpadComponent {
   return useComponent(componentId);
 }
 
-function RenderedNode({ nodeId }: RenderedNodeProps) {
+function RenderedNode({ nodeId, ...otherProps }: RenderedNodeProps) {
   const dom = useDomContext();
   const node = appDom.getNode(dom, nodeId, 'element');
   const Component: ToolpadComponent<any> = useElmToolpadComponent(node);
   const childNodeGroups = appDom.getChildNodes(dom, node);
 
   return (
-    <RenderedNodeContent node={node} childNodeGroups={childNodeGroups} Component={Component} />
+    <RenderedNodeContent
+      node={node}
+      childNodeGroups={childNodeGroups}
+      Component={Component}
+      {...otherProps}
+    />
   );
 }
 
@@ -914,10 +919,14 @@ interface RenderedNodeContentProps {
   Component: ToolpadComponent<any>;
 }
 
-function RenderedNodeContent({ node, childNodeGroups, Component }: RenderedNodeContentProps) {
+function RenderedNodeContent({
+  node,
+  childNodeGroups,
+  Component,
+  ...otherProps
+}: RenderedNodeContentProps) {
   const { setControlledBinding } = React.useContext(SetBindingContext) ?? {};
   invariant(setControlledBinding, 'Node must be rendered in a RuntimeScoped context');
-
   const nodeId = node.id;
 
   const componentConfig = Component[TOOLPAD_COMPONENT];
@@ -1073,10 +1082,12 @@ function RenderedNodeContent({ node, childNodeGroups, Component }: RenderedNodeC
   const reactChildren = React.useMemo(() => {
     const result: Record<string, React.ReactNode> = {};
     for (const [prop, childNodes] of Object.entries(childNodeGroups)) {
-      result[prop] = childNodes.map((child) => <RenderedNode key={child.id} nodeId={child.id} />);
+      result[prop] = childNodes.map((child) => (
+        <RenderedNode key={child.id} nodeId={child.id} {...otherProps} />
+      ));
     }
     return result;
-  }, [childNodeGroups]);
+  }, [childNodeGroups, otherProps]);
 
   const layoutElementProps = React.useMemo(() => {
     if (appDom.isElement(node) && isPageRow(node)) {
@@ -1094,8 +1105,9 @@ function RenderedNodeContent({ node, childNodeGroups, Component }: RenderedNodeC
       ...eventHandlers,
       ...layoutElementProps,
       ...reactChildren,
+      ...otherProps,
     };
-  }, [boundProps, eventHandlers, layoutElementProps, onChangeHandlers, reactChildren]);
+  }, [boundProps, eventHandlers, layoutElementProps, onChangeHandlers, reactChildren, otherProps]);
 
   const previousProps = React.useRef<Record<string, any>>(props);
   const [hasSetInitialBindings, setHasSetInitialBindings] = React.useState(false);
@@ -1138,7 +1150,9 @@ function RenderedNodeContent({ node, childNodeGroups, Component }: RenderedNodeC
             </Slots>
           );
         } else if (argType.control?.type === 'slot') {
-          wrappedValue = <Placeholder prop={propName}>{value}</Placeholder>;
+          /** 修改props透传 */
+          // wrappedValue = <Placeholder prop={propName}>{value}</Placeholder>;
+          wrappedValue = value[0];
         }
 
         if (isTemplate) {
