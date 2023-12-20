@@ -4,3 +4,6 @@
 [submodule "packages/toolpad-antd-components"]
 	path = packages/toolpad-antd-components
 	url = git@bitbucket.org:elestyle-web/toolpad-antd-components.git
+[submodule "toolpad"]
+	path = toolpad
+	url = git@bitbucket.org:elestyle-web/toolpad.git
