@@ -1,0 +1,6 @@
+[submodule "packages/toolpad-runtime"]
+	path = packages/toolpad-runtime
+	url = git@bitbucket.org:elestyle-web/toolpad-runtime.git
+[submodule "packages/toolpad-antd-components"]
+	path = packages/toolpad-antd-components
+	url = git@bitbucket.org:elestyle-web/toolpad-antd-components.git
