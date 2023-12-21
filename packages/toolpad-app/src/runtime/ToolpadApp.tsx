@@ -665,7 +665,7 @@ function useElmToolpadComponent(elm: appDom.ElementNode): ToolpadComponent {
   return useComponent(componentId);
 }
 
-function RenderedNode({ nodeId, ...otherProps }: RenderedNodeProps) {
+function RenderedNode({ nodeId, ...rest }: RenderedNodeProps) {
   const dom = useDomContext();
   const node = appDom.getNode(dom, nodeId, 'element');
   const Component: ToolpadComponent<any> = useElmToolpadComponent(node);
@@ -676,7 +676,7 @@ function RenderedNode({ nodeId, ...otherProps }: RenderedNodeProps) {
       node={node}
       childNodeGroups={childNodeGroups}
       Component={Component}
-      {...otherProps}
+      {...rest}
     />
   );
 }
@@ -927,7 +927,7 @@ function RenderedNodeContent({
   node,
   childNodeGroups,
   Component,
-  ...otherProps
+  ...rest
 }: RenderedNodeContentProps) {
   const { setControlledBinding } = React.useContext(SetBindingContext) ?? {};
   invariant(setControlledBinding, 'Node must be rendered in a RuntimeScoped context');
@@ -1087,11 +1087,11 @@ function RenderedNodeContent({
     const result: Record<string, React.ReactNode> = {};
     for (const [prop, childNodes] of Object.entries(childNodeGroups)) {
       result[prop] = childNodes.map((child) => (
-        <RenderedNode key={child.id} nodeId={child.id} {...otherProps} />
+        <RenderedNode key={child.id} nodeId={child.id} {...rest} />
       ));
     }
     return result;
-  }, [childNodeGroups, otherProps]);
+  }, [childNodeGroups, rest]);
 
   const layoutElementProps = React.useMemo(() => {
     if (appDom.isElement(node) && isPageRow(node)) {
@@ -1109,9 +1109,9 @@ function RenderedNodeContent({
       ...eventHandlers,
       ...layoutElementProps,
       ...reactChildren,
-      ...otherProps,
+      ...rest,
     };
-  }, [boundProps, eventHandlers, layoutElementProps, onChangeHandlers, reactChildren, otherProps]);
+  }, [boundProps, eventHandlers, layoutElementProps, onChangeHandlers, reactChildren, rest]);
 
   const previousProps = React.useRef<Record<string, any>>(props);
   const [hasSetInitialBindings, setHasSetInitialBindings] = React.useState(false);

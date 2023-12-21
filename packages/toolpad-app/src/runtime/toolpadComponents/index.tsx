@@ -29,6 +29,8 @@ export const INTERNAL_COMPONENTS = new Map<string, ToolpadComponentDefinition>([
   ['Input', { displayName: 'Input', builtIn: 'Input', synonyms: ['click', 'action'] }],
   ['Select', { displayName: 'Select', builtIn: 'Select', synonyms: ['combobox', 'dropdown'] }],
   ['Switch', { displayName: 'Switch', builtIn: 'Switch', synonyms: ['switch'] }],
+  ['Row', { displayName: 'Row', builtIn: 'Row', synonyms: [] }],
+  ['Column', { displayName: 'Column', builtIn: 'Column', synonyms: [] }],
   // [PAGE_ROW_COMPONENT_ID, { displayName: 'Row', builtIn: 'PageRow', system: true, synonyms: [] }],
   // [
   //   PAGE_COLUMN_COMPONENT_ID,
