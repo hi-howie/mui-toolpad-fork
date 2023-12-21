@@ -115,7 +115,7 @@ const Pre = styled('pre')(({ theme }) => ({
   fontFamily: theme.fontFamilyMonospaced,
 }));
 
-const internalComponents: ToolpadComponents = Object.fromEntries(
+export const internalComponents: ToolpadComponents = Object.fromEntries(
   [...INTERNAL_COMPONENTS].map(([name]) => {
     let builtIn = (builtIns as any)[name];
 
@@ -1155,8 +1155,7 @@ function RenderedNodeContent({
           );
         } else if (argType.control?.type === 'slot') {
           /** 修改props透传 */
-          // wrappedValue = <Placeholder prop={propName}>{value}</Placeholder>;
-          wrappedValue = value[0];
+          wrappedValue = value ? value[0] : <Placeholder prop={propName}>{value}</Placeholder>;
         }
 
         if (isTemplate) {
@@ -1396,7 +1395,7 @@ interface RenderedLowCodePageProps {
   page: appDom.PageNode;
 }
 
-function RenderedLowCodePage({ page }: RenderedLowCodePageProps) {
+export function RenderedLowCodePage({ page }: RenderedLowCodePageProps) {
   const dom = useDomContext();
   const { children = [], queries = [] } = appDom.getChildNodes(dom, page);
 
