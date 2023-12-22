@@ -1575,7 +1575,7 @@ function ToolpadAppLayout({ dom }: ToolpadAppLayoutProps) {
     () =>
       pages.map((page) => ({
         slug: page.name,
-        displayName: page.attributes.displayName ?? page.name,
+        displayName: appDom.getPageDisplayName(page),
         hasShell: page?.attributes.display !== 'standalone',
       })),
     [pages],
