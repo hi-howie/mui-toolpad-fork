@@ -75,7 +75,6 @@ import { RuntimeState } from './types';
 import { getBindingType, getBindingValue } from './bindings';
 import {
   getElementNodeComponentId,
-  INTERNAL_COMPONENTS,
   isPageLayoutComponent,
   isPageRow,
   PAGE_ROW_COMPONENT_ID,
@@ -115,17 +114,14 @@ const Pre = styled('pre')(({ theme }) => ({
   fontFamily: theme.fontFamilyMonospaced,
 }));
 
-export const internalComponents: ToolpadComponents = Object.fromEntries(
-  [...INTERNAL_COMPONENTS].map(([name]) => {
-    let builtIn = (builtIns as any)[name];
-
+const internalComponents: ToolpadComponents = Object.fromEntries(
+  Object.entries(builtIns).map(([name, builtIn]) => {
     if (!isToolpadComponent(builtIn)) {
       builtIn = createToolpadComponentThatThrows(
         new Error(`Imported builtIn "${name}" is not a ToolpadComponent`),
       );
     }
-
-    return [name, builtIn];
+    return [name, builtIn] as [string, ToolpadComponent];
   }),
 );
 
