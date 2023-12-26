@@ -7,3 +7,6 @@
 [submodule "toolpad"]
 	path = toolpad
 	url = git@bitbucket.org:elestyle-web/toolpad.git
+[submodule "packages/dashboard-components"]
+	path = packages/dashboard-components
+	url = git@bitbucket.org:elestyle-web/dashboard-components.git
