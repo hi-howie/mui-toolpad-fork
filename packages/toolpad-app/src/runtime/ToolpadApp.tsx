@@ -60,7 +60,7 @@ import {
   ResetNodeErrorsKeyProvider,
   UseDataProviderContext,
 } from '@mui/toolpad-core/runtime';
-import ErrorIcon from '@mui/icons-material/Error';
+// import ErrorIcon from '@mui/icons-material/Error';
 import { getBrowserRuntime } from '@mui/toolpad-core/jsBrowserRuntime';
 // import * as builtIns from '@mui/toolpad-components';
 import * as builtIns from '@elestyle/toolpad-antd-components';
@@ -910,7 +910,7 @@ function NodeError({ error }: NodeErrorProps) {
           color: 'white',
         }}
       >
-        <ErrorIcon color="inherit" style={{ marginRight: 8 }} /> Error
+        <div color="inherit" style={{ marginRight: 8 }} /> Error
       </span>
     </Tooltip>
   );
