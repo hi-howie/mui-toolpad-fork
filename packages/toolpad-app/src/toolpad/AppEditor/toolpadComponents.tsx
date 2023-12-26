@@ -24,105 +24,114 @@ export interface InstantiatedComponent extends ToolpadComponentDefinition {
 export type InstantiatedComponents = Record<string, InstantiatedComponent | undefined>;
 
 export const INTERNAL_COMPONENTS = new Map<string, ToolpadComponentDefinition>([
-  [PAGE_ROW_COMPONENT_ID, { displayName: 'Row', builtIn: 'PageRow', system: true, synonyms: [] }],
-  [
-    PAGE_COLUMN_COMPONENT_ID,
-    { displayName: 'Column', builtIn: 'PageColumn', system: true, synonyms: [] },
-  ],
-  [STACK_COMPONENT_ID, { displayName: 'Stack', builtIn: 'Stack', system: true, synonyms: [] }],
-  [
-    'Autocomplete',
-    {
-      displayName: 'Autocomplete',
-      builtIn: 'Autocomplete',
-      synonyms: ['combobox', 'select', 'dropdown'],
-    },
-  ],
-  [
-    'Button',
-    {
-      displayName: 'Button',
-      builtIn: 'Button',
-      synonyms: ['click', 'action'],
-    },
-  ],
-  ['Image', { displayName: 'Image', builtIn: 'Image', synonyms: ['picture'] }],
-  ['DataGrid', { displayName: 'Data Grid', builtIn: 'DataGrid', synonyms: ['table'] }],
-  [
-    'Chart',
-    {
-      displayName: 'Chart',
-      builtIn: 'Chart',
-      synonyms: ['graph', 'bar chart', 'pie chart', 'line chart', 'plot'],
-    },
-  ],
-  [
-    'TextField',
-    { displayName: 'Text Field', builtIn: 'TextField', synonyms: ['input', 'field', 'password'] },
-  ],
-  ['DatePicker', { displayName: 'Date Picker', builtIn: 'DatePicker', synonyms: ['time'] }],
-  ['FilePicker', { displayName: 'File Picker', builtIn: 'FilePicker', synonyms: [] }],
-  ['Text', { displayName: 'Text', builtIn: 'Text', synonyms: ['markdown', 'link', 'output'] }],
-  [
-    'Markdown',
-    {
-      displayName: 'Markdown',
-      builtIn: 'Text',
-      initialProps: {
-        mode: 'markdown',
-      },
-      synonyms: [],
-    },
-  ],
-  [
-    'Link',
-    {
-      displayName: 'Link',
-      builtIn: 'Text',
-      initialProps: {
-        mode: 'link',
-      },
-      synonyms: [],
-    },
-  ],
+  ['Button', { displayName: 'Button', builtIn: 'Button', synonyms: ['click', 'action'] }],
+  ['Checkbox', { displayName: 'Checkbox', builtIn: 'Checkbox', synonyms: ['switch'] }],
+  ['Form', { displayName: 'Form', builtIn: 'Form', synonyms: [] }],
+  ['FormItem', { displayName: 'FormItem', builtIn: 'FormItem', synonyms: [] }],
+  ['Input', { displayName: 'Input', builtIn: 'Input', synonyms: ['click', 'action'] }],
   ['Select', { displayName: 'Select', builtIn: 'Select', synonyms: ['combobox', 'dropdown'] }],
-  ['List', { displayName: 'List', builtIn: 'List', synonyms: ['repeat'] }],
-  ['Paper', { displayName: 'Paper', builtIn: 'Paper', synonyms: ['surface'] }],
-  ['Tabs', { displayName: 'Tabs', builtIn: 'Tabs', synonyms: [] }],
-  ['Container', { displayName: 'Container', builtIn: 'Container', synonyms: [] }],
-  ['Metric', { displayName: 'Metric', builtIn: 'Metric', synonyms: ['value', 'number', 'output'] }],
-  [
-    'Checkbox',
-    {
-      displayName: 'Checkbox',
-      initialProps: {
-        mode: 'checkbox',
-      },
-      builtIn: 'Checkbox',
-      synonyms: ['switch'],
-    },
-  ],
-  [
-    'Switch',
-    {
-      displayName: 'Switch',
-      initialProps: {
-        mode: 'switch',
-      },
-      builtIn: 'Checkbox',
-      synonyms: ['switch'],
-    },
-  ],
-  [FORM_COMPONENT_ID, { displayName: 'Form', builtIn: 'Form', synonyms: [] }],
-  [
-    'Password',
-    {
-      displayName: 'Password',
-      builtIn: 'TextField',
-      synonyms: [],
-      initialProps: { password: true },
-    },
-  ],
+  ['Switch', { displayName: 'Switch', builtIn: 'Switch', synonyms: ['switch'] }],
+  ['Row', { displayName: 'Row', builtIn: 'Row', synonyms: [] }],
+  ['Column', { displayName: 'Column', builtIn: 'Column', synonyms: [] }],
+  // [PAGE_ROW_COMPONENT_ID, { displayName: 'Row', builtIn: 'PageRow', system: true, synonyms: [] }],
+  // [
+  //   PAGE_COLUMN_COMPONENT_ID,
+  //   { displayName: 'Column', builtIn: 'PageColumn', system: true, synonyms: [] },
+  // ],
+  // [STACK_COMPONENT_ID, { displayName: 'Stack', builtIn: 'Stack', system: true, synonyms: [] }],
+  // [
+  //   'Autocomplete',
+  //   {
+  //     displayName: 'Autocomplete',
+  //     builtIn: 'Autocomplete',
+  //     synonyms: ['combobox', 'select', 'dropdown'],
+  //   },
+  // ],
+  // [
+  //   'Button',
+  //   {
+  //     displayName: 'Button',
+  //     builtIn: 'Button',
+  //     synonyms: ['click', 'action'],
+  //   },
+  // ],
+  // ['Image', { displayName: 'Image', builtIn: 'Image', synonyms: ['picture'] }],
+  // ['DataGrid', { displayName: 'Data Grid', builtIn: 'DataGrid', synonyms: ['table'] }],
+  // [
+  //   'Chart',
+  //   {
+  //     displayName: 'Chart',
+  //     builtIn: 'Chart',
+  //     synonyms: ['graph', 'bar chart', 'pie chart', 'line chart', 'plot'],
+  //   },
+  // ],
+  // [
+  //   'TextField',
+  //   { displayName: 'Text Field', builtIn: 'TextField', synonyms: ['input', 'field', 'password'] },
+  // ],
+  // ['DatePicker', { displayName: 'Date Picker', builtIn: 'DatePicker', synonyms: ['time'] }],
+  // ['FilePicker', { displayName: 'File Picker', builtIn: 'FilePicker', synonyms: [] }],
+  // ['Text', { displayName: 'Text', builtIn: 'Text', synonyms: ['markdown', 'link', 'output'] }],
+  // [
+  //   'Markdown',
+  //   {
+  //     displayName: 'Markdown',
+  //     builtIn: 'Text',
+  //     initialProps: {
+  //       mode: 'markdown',
+  //     },
+  //     synonyms: [],
+  //   },
+  // ],
+  // [
+  //   'Link',
+  //   {
+  //     displayName: 'Link',
+  //     builtIn: 'Text',
+  //     initialProps: {
+  //       mode: 'link',
+  //     },
+  //     synonyms: [],
+  //   },
+  // ],
+  // ['Select', { displayName: 'Select', builtIn: 'Select', synonyms: ['combobox', 'dropdown'] }],
+  // ['List', { displayName: 'List', builtIn: 'List', synonyms: ['repeat'] }],
+  // ['Paper', { displayName: 'Paper', builtIn: 'Paper', synonyms: ['surface'] }],
+  // ['Tabs', { displayName: 'Tabs', builtIn: 'Tabs', synonyms: [] }],
+  // ['Container', { displayName: 'Container', builtIn: 'Container', synonyms: [] }],
+  // ['Metric', { displayName: 'Metric', builtIn: 'Metric', synonyms: ['value', 'number', 'output'] }],
+  // [
+  //   'Checkbox',
+  //   {
+  //     displayName: 'Checkbox',
+  //     initialProps: {
+  //       mode: 'checkbox',
+  //     },
+  //     builtIn: 'Checkbox',
+  //     synonyms: ['switch'],
+  //   },
+  // ],
+  // [
+  //   'Switch',
+  //   {
+  //     displayName: 'Switch',
+  //     initialProps: {
+  //       mode: 'switch',
+  //     },
+  //     builtIn: 'Checkbox',
+  //     synonyms: ['switch'],
+  //   },
+  // ],
+  // [FORM_COMPONENT_ID, { displayName: 'Form', builtIn: 'Form', synonyms: [] }],
+  // [
+  //   'Password',
+  //   {
+  //     displayName: 'Password',
+  //     builtIn: 'TextField',
+  //     synonyms: [],
+  //     initialProps: { password: true },
+  //   },
+  // ],
 ]);
 
 function useCodeComponents(): ToolpadComponentDefinitions {
