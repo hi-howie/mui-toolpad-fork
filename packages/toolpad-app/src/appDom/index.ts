@@ -476,7 +476,7 @@ export function validateNodeName(name: string, disallowedNames: Set<string>, kin
 }
 
 export function createNode<T extends AppDomNodeType>(
-  dom: AppDom,
+  _: AppDom,
   type: T,
   init: AppDomNodeInitOfType<T>,
 ): AppDomNodeOfType<T> {
@@ -543,7 +543,7 @@ export function createElement<P>(
 export function getDescendants(dom: AppDom, node: AppDomNode): readonly AppDomNode[] {
   const children: readonly AppDomNode[] = Object.values(getChildNodes(dom, node))
     .flat()
-    .filter(Boolean);
+    .filter(Boolean) as any;
   return [...children, ...children.flatMap((child) => getDescendants(dom, child))];
 }
 
