@@ -113,7 +113,7 @@ const Pre = styled('pre')(({ theme }) => ({
   fontFamily: theme.fontFamilyMonospaced,
 }));
 
-const internalComponents: ToolpadComponents = Object.fromEntries(
+export const internalComponents: ToolpadComponents = Object.fromEntries(
   Object.entries(builtIns).map(([name, builtIn]) => {
     if (!isToolpadComponent(builtIn)) {
       builtIn = createToolpadComponentThatThrows(
