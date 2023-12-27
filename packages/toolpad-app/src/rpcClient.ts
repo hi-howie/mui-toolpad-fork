@@ -13,8 +13,9 @@ import {
   UseSuspenseQueryResult,
 } from '@tanstack/react-query';
 import type { MethodsOf, RpcRequest, RpcResponse, MethodResolvers, Methods } from './server/rpc';
+import { createRpcClientDashboard } from './rpcClientDashboard';
 
-function createRpcClient<D extends MethodResolvers>(endpoint: string | URL): MethodsOf<D> {
+export function createRpcClient<D extends MethodResolvers>(endpoint: string | URL): MethodsOf<D> {
   return new Proxy({} as MethodsOf<D>, {
     get(target, prop) {
       return async (...params: any[]) => {
@@ -100,7 +101,7 @@ export function createRpcApi<D extends MethodResolvers>(
   queryClient: QueryClient,
   endpoint: string | URL,
 ): ApiClient<D> {
-  const methods = createRpcClient<D>(endpoint);
+  const methods = createRpcClientDashboard<D>(endpoint);
 
   return {
     methods,
