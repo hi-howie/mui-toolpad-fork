@@ -1030,9 +1030,9 @@ function createRenderTreeNode(node: AppDomNode): RenderTreeNode | null {
   }
 
   if (isQuery(node) || isMutation(node)) {
-    if (node.attributes.query) {
-      node = setNamespacedProp(node, 'attributes', 'query', null);
-    }
+    // if (node.attributes.query) {
+    //   node = setNamespacedProp(node, 'attributes', 'query', null);
+    // }
   }
 
   return node as RenderTreeNode;

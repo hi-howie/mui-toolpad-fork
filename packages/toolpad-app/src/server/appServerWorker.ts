@@ -50,6 +50,7 @@ function devServerPlugin({ config, base }: ToolpadAppDevServerParams): Plugin {
 
             let html = await viteServer.transformIndexHtml(req.url, template);
 
+            // console.log('html =>', JSON.stringify(dom, null, 2));
             html = postProcessHtml(html, {
               config,
               initialState: createRuntimeState({ dom }),

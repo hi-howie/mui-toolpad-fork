@@ -95,6 +95,7 @@ export default class DataManager {
       );
     }
 
+    // console.log('====execDataNodeQuery', { dataNode, params });
     let result = await dataSource.exec(null, dataNode.attributes.query, params);
 
     if (appDom.isQuery(dataNode)) {
@@ -113,6 +114,7 @@ export default class DataManager {
 
   async execQuery(pageName: string, queryName: string, params: any): Promise<ExecFetchResult<any>> {
     const dom = await this.project.loadDom();
+    // console.log('====execQuery1', JSON.stringify(dom, null, 2));
 
     const page = appDom.getPageByName(dom, pageName);
 
