@@ -12,8 +12,8 @@ import {
   UseSuspenseQueryOptions,
   UseSuspenseQueryResult,
 } from '@tanstack/react-query';
+import request from '@elepay/dashboard-core/request';
 import type { MethodsOf, RpcRequest, RpcResponse, MethodResolvers, Methods } from './server/rpc';
-import { createRpcClientDashboard } from './rpcClientDashboard';
 
 export function createRpcClient<D extends MethodResolvers>(endpoint: string | URL): MethodsOf<D> {
   return new Proxy({} as MethodsOf<D>, {
@@ -23,16 +23,36 @@ export function createRpcClient<D extends MethodResolvers>(endpoint: string | UR
           name: prop as string,
           params,
         };
-        const res = await fetch(endpoint, {
+        // const res = await fetch(endpoint, {
+        //   method: 'POST',
+        //   headers: {
+        //     'content-type': 'application/json',
+        //   },
+        //   body: JSON.stringify(body),
+        // });
+
+        // if (res.ok) {
+        //   const response = (await res.json()) as RpcResponse;
+        //   if (response.error) {
+        //     const toolpadError = new Error(response.error.message, {
+        //       cause: response.error,
+        //     });
+        //     if (response.error.code) {
+        //       toolpadError.code = response.error.code;
+        //     }
+        //     throw toolpadError;
+        //   }
+        //   return superjson.parse(response.result);
+        // }
+
+        const res = await request({
+          url: typeof endpoint === 'string' ? endpoint : endpoint.pathname,
           method: 'POST',
-          headers: {
-            'content-type': 'application/json',
-          },
-          body: JSON.stringify(body),
+          data: body,
         });
 
-        if (res.ok) {
-          const response = (await res.json()) as RpcResponse;
+        if (res.status === 200) {
+          const response = res.data as RpcResponse;
           if (response.error) {
             const toolpadError = new Error(response.error.message, {
               cause: response.error,
@@ -101,7 +121,7 @@ export function createRpcApi<D extends MethodResolvers>(
   queryClient: QueryClient,
   endpoint: string | URL,
 ): ApiClient<D> {
-  const methods = createRpcClientDashboard<D>(endpoint);
+  const methods = createRpcClient<D>(endpoint);
 
   return {
     methods,

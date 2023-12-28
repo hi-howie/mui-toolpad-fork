@@ -228,6 +228,7 @@ export default function createDatasource(
     },
 
     async execPrivate(connection: Maybe<RestConnectionParams>, query: FetchPrivateQuery) {
+      console.log('execPrivate', query);
       switch (query.kind) {
         case 'introspection': {
           const env = await loadEnvFile(project);
