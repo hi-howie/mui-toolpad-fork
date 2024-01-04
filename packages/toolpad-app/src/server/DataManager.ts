@@ -114,7 +114,6 @@ export default class DataManager {
 
   async execQuery(pageName: string, queryName: string, params: any): Promise<ExecFetchResult<any>> {
     const dom = await this.project.loadDom();
-    // console.log('====execQuery1', JSON.stringify(dom, null, 2));
 
     const page = appDom.getPageByName(dom, pageName);
 
