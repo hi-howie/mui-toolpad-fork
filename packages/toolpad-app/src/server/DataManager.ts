@@ -94,8 +94,6 @@ export default class DataManager {
         `Unknown datasource "${dataNode.attributes.dataSource}" for query "${dataNode.id}"`,
       );
     }
-
-    // console.log('====execDataNodeQuery', { dataNode, params });
     let result = await dataSource.exec(null, dataNode.attributes.query, params);
 
     if (appDom.isQuery(dataNode)) {
