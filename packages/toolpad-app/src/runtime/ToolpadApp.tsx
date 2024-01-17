@@ -127,8 +127,7 @@ export const internalComponents: ToolpadComponents = Object.fromEntries(
 );
 
 const ReactQueryDevtoolsProduction = React.lazy(() =>
-  // eslint-disable-next-line import/extensions
-  import('@tanstack/react-query-devtools/build/modern/production.js').then((d) => ({
+  import('@tanstack/react-query-devtools/production').then((d) => ({
     default: d.ReactQueryDevtools,
   })),
 );
@@ -1515,10 +1514,10 @@ function RenderedPages({ pages, hasAuthentication = false, basename }: RenderedP
           />
         );
 
-        if (!IS_RENDERED_IN_CANVAS && hasAuthentication && page.attributes.authorization) {
+        if (!IS_RENDERED_IN_CANVAS && hasAuthentication) {
           pageContent = (
             <RequireAuthorization
-              allowedRole={page.attributes.authorization.allowedRoles}
+              allowedRole={page.attributes.authorization?.allowedRoles ?? []}
               basename={basename}
             >
               {pageContent}
