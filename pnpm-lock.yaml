@@ -56,7 +56,7 @@ importers:
         version: 1.4.1
       '@mui/monorepo':
         specifier: github:mui/material-ui
-        version: github.com/mui/material-ui/664e9b72f0b403f0cc08dc4cc202262e49275dcd
+        version: github.com/mui/material-ui/57a59692df1d7016a4e46d540eb5b4ff56d83f62
       '@mui/x-charts':
         specifier: 6.18.7
         version: 6.18.7(@mui/material@5.15.4)(@mui/system@5.15.4)(react-dom@18.2.0)(react@18.2.0)
@@ -221,7 +221,7 @@ importers:
         version: 5.15.4(@emotion/cache@11.11.0)(@emotion/server@11.11.0)(@mui/material@5.15.4)(next@13.4.19)(react@18.2.0)
       '@mui/monorepo':
         specifier: https://github.com/mui/material-ui.git
-        version: github.com/mui/material-ui/664e9b72f0b403f0cc08dc4cc202262e49275dcd
+        version: github.com/mui/material-ui/57a59692df1d7016a4e46d540eb5b4ff56d83f62
       '@mui/styles':
         specifier: 5.15.4
         version: 5.15.4(react@18.2.0)
@@ -514,25 +514,40 @@ importers:
 
   packages/dashboard-runtime:
     dependencies:
+      '@elestyle/toolpad-dashboard':
+        specifier: workspace:^
+        version: link:../toolpad-dashboard
+      '@mui/material':
+        specifier: 5.15.4
+        version: 5.15.4(@emotion/react@11.11.3)(@emotion/styled@11.11.0)(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)
+      '@mui/toolpad':
+        specifier: workspace:^
+        version: link:../toolpad-app
+      '@mui/toolpad-utils':
+        specifier: workspace:^
+        version: link:../toolpad-utils
+      '@mui/utils':
+        specifier: 5.15.4
+        version: 5.15.4(@types/react@18.2.48)(react@18.2.0)
       '@tanstack/react-query':
         specifier: 5.17.10
         version: 5.17.10(react@18.2.0)
       react:
-        specifier: ^18.0.0
+        specifier: ^18.2.0
         version: 18.2.0
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.2.0(react@18.2.0)
       react-router-dom:
         specifier: 6.21.2
         version: 6.21.2(react-dom@18.2.0)(react@18.2.0)
     devDependencies:
-      '@elepay/toolpad-dashboard':
-        specifier: workspace:^
-        version: link:../toolpad-dashboard
-      '@mui/toolpad':
-        specifier: workspace:^
-        version: link:../toolpad-app
       '@types/react':
         specifier: ^18.2.48
         version: 18.2.48
+      '@types/react-dom':
+        specifier: 18.2.18
+        version: 18.2.18
       '@vitejs/plugin-react':
         specifier: ^4.2.1
         version: 4.2.1(vite@5.0.11)
@@ -558,10 +573,10 @@ importers:
       '@auth/core':
         specifier: 0.20.0
         version: 0.20.0
-      '@elepay/dashboard-core':
+      '@elestyle/dashboard-core':
         specifier: workspace:^
         version: link:../dashboard-core
-      '@elepay/toolpad-dashboard':
+      '@elestyle/toolpad-dashboard':
         specifier: workspace:^
         version: link:../toolpad-dashboard
       '@emotion/cache':
@@ -1029,7 +1044,7 @@ importers:
 
   packages/toolpad-dashboard:
     dependencies:
-      '@elepay/dashboard-components':
+      '@elestyle/dashboard-components':
         specifier: workspace:^
         version: link:../dashboard-components
       '@mui/material':
@@ -15962,10 +15977,10 @@ packages:
     resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
     dev: false
 
-  github.com/mui/material-ui/664e9b72f0b403f0cc08dc4cc202262e49275dcd:
-    resolution: {tarball: https://codeload.github.com/mui/material-ui/tar.gz/664e9b72f0b403f0cc08dc4cc202262e49275dcd}
+  github.com/mui/material-ui/57a59692df1d7016a4e46d540eb5b4ff56d83f62:
+    resolution: {tarball: https://codeload.github.com/mui/material-ui/tar.gz/57a59692df1d7016a4e46d540eb5b4ff56d83f62}
     name: '@mui/monorepo'
-    version: 5.15.4
+    version: 5.15.5
     requiresBuild: true
     dependencies:
       '@googleapis/sheets': 5.0.5

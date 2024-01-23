@@ -46,8 +46,8 @@
     }
   },
   "dependencies": {
-    "@elepay/dashboard-core": "workspace:^",
-    "@elepay/toolpad-dashboard": "workspace:^",
+    "@elestyle/dashboard-core": "workspace:^",
+    "@elestyle/toolpad-dashboard": "workspace:^",
     "@auth/core": "0.20.0",
     "@emotion/cache": "11.11.0",
     "@emotion/react": "11.11.3",
