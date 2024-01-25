@@ -63,13 +63,13 @@ import {
 // import ErrorIcon from '@mui/icons-material/Error';
 import { getBrowserRuntime } from '@mui/toolpad-core/jsBrowserRuntime';
 // import * as builtIns from '@mui/toolpad-components';
-import * as builtIns from '@elestyle/toolpad-dashboard';
+import * as builtIns from '@elepay/toolpad-dashboard';
 import { errorFrom } from '@mui/toolpad-utils/errors';
 import useBoolean from '@mui/toolpad-utils/hooks/useBoolean';
 import usePageTitle from '@mui/toolpad-utils/hooks/usePageTitle';
 import invariant from 'invariant';
 import useEventCallback from '@mui/utils/useEventCallback';
-import * as appDom from '../appDom';
+import * as appDom from '@mui/toolpad-core/appDom';
 import { RuntimeState } from './types';
 import { getBindingType, getBindingValue } from './bindings';
 import {

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { request } from '@elestyle/dashboard-core/toolpadDebugExec';
+import { request } from '@elepay/dashboard-core/toolpadDebugExec';
 // import { useConnectionContext } from './context';
 // import { useProjectApi } from '../projectApi';
 
