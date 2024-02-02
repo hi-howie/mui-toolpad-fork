@@ -38,6 +38,7 @@ import {
   createGlobalState,
   createProvidedContext,
   useAssertedContext,
+  useNonNullableContext,
 } from '@mui/toolpad-utils/react';
 import { mapProperties, mapValues } from '@mui/toolpad-utils/collections';
 import { set as setObjectPath } from 'lodash-es';
@@ -84,7 +85,7 @@ import evalJsBindings, {
   EvaluatedBinding,
   ParsedBinding,
 } from './evalJsBindings';
-import { HTML_ID_EDITOR_OVERLAY, IS_PREVIEW, PREVIEW_HEADER_HEIGHT } from './constants';
+import { HTML_ID_EDITOR_OVERLAY, PREVIEW_HEADER_HEIGHT } from './constants';
 import { layoutBoxArgTypes } from './toolpadComponents/layoutBox';
 import { useDataQuery, UseFetch } from './useDataQuery';
 import { CanvasHooksContext, NavigateToPage } from './CanvasHooksContext';
@@ -95,6 +96,7 @@ import api, { queryClient } from './api';
 import { AuthContext, useAuth } from './useAuth';
 import { RequireAuthorization } from './auth';
 import SignInPage from './SignInPage';
+import { AppHostContext } from './AppHostContext';
 
 const browserJsRuntime = getBrowserRuntime();
 
@@ -102,8 +104,6 @@ export const IS_RENDERED_IN_CANVAS =
   typeof window === 'undefined'
     ? false
     : !!(window.frameElement as HTMLIFrameElement)?.dataset?.toolpadCanvas;
-
-const SHOW_PREVIEW_HEADER = IS_PREVIEW && !IS_RENDERED_IN_CANVAS;
 
 export type PageComponents = Partial<Record<string, React.ComponentType>>;
 
@@ -187,7 +187,6 @@ const AppRoot = styled('div')({
   minHeight: '100vh',
   display: 'flex',
   flexDirection: 'column',
-  paddingTop: SHOW_PREVIEW_HEADER ? PREVIEW_HEADER_HEIGHT : 0,
 });
 
 const EditorOverlay = styled('div')({
@@ -1491,14 +1490,12 @@ function PageNotFound() {
 
 interface RenderedPagesProps {
   pages: appDom.PageNode[];
+  defaultPage: appDom.PageNode;
   hasAuthentication?: boolean;
-  basename: string;
 }
 
-function RenderedPages({ pages, hasAuthentication = false, basename }: RenderedPagesProps) {
+function RenderedPages({ pages, defaultPage, hasAuthentication = false }: RenderedPagesProps) {
   const { search } = useLocation();
-
-  const defaultPage = pages[0];
 
   const defaultPageNavigation = <Navigate to={`/pages/${defaultPage.name}${search}`} replace />;
 
@@ -1517,8 +1514,8 @@ function RenderedPages({ pages, hasAuthentication = false, basename }: RenderedP
         if (!IS_RENDERED_IN_CANVAS && hasAuthentication) {
           pageContent = (
             <RequireAuthorization
-              allowedRole={page.attributes.authorization?.allowedRoles ?? []}
-              basename={basename}
+              allowAll={page.attributes.authorization?.allowAll ?? true}
+              allowedRoles={page.attributes.authorization?.allowedRoles ?? []}
             >
               {pageContent}
             </RequireAuthorization>
@@ -1571,26 +1568,39 @@ function AppError({ error }: FallbackProps) {
 export interface ToolpadAppLayoutProps {
   dom: appDom.RenderTree;
   basename: string;
+  clipped: boolean;
 }
 
-function ToolpadAppLayout({ dom, basename }: ToolpadAppLayoutProps) {
+function ToolpadAppLayout({ dom, basename, clipped }: ToolpadAppLayoutProps) {
   const root = appDom.getApp(dom);
   const { pages = [] } = appDom.getChildNodes(dom, root);
 
-  const { hasAuthentication } = React.useContext(AuthContext);
+  const { session, hasAuthentication } = React.useContext(AuthContext);
 
   const pageMatch = useMatch('/pages/:slug');
   const activePageSlug = pageMatch?.params.slug;
 
+  const authFilteredPages = React.useMemo(() => {
+    const userRoles = session?.user?.roles ?? [];
+    return pages.filter((page) => {
+      const { allowAll = true, allowedRoles = [] } = page.attributes.authorization ?? {};
+      return allowAll || userRoles.some((role) => allowedRoles.includes(role));
+    });
+  }, [pages, session?.user?.roles]);
+
   const navEntries = React.useMemo(
     () =>
-      pages.map((page) => ({
+      authFilteredPages.map((page) => ({
         slug: page.name,
         displayName: appDom.getPageDisplayName(page),
         hasShell: page?.attributes.display !== 'standalone',
       })),
-    [pages],
+    [authFilteredPages],
   );
+
+  if (!IS_RENDERED_IN_CANVAS && !session?.user && hasAuthentication) {
+    return <AppLoading />;
+  }
 
   return (
     <AppLayout
@@ -1598,9 +1608,14 @@ function ToolpadAppLayout({ dom, basename }: ToolpadAppLayoutProps) {
       pages={navEntries}
       hasNavigation={!IS_RENDERED_IN_CANVAS}
       hasHeader={hasAuthentication && !IS_RENDERED_IN_CANVAS}
-      clipped={SHOW_PREVIEW_HEADER}
+      clipped={clipped}
+      basename={basename}
     >
-      <RenderedPages pages={pages} hasAuthentication={hasAuthentication} basename={basename} />
+      <RenderedPages
+        pages={pages}
+        defaultPage={authFilteredPages[0] ?? pages[0]}
+        hasAuthentication={hasAuthentication}
+      />
     </AppLayout>
   );
 }
@@ -1633,13 +1648,21 @@ export default function ToolpadApp({ rootRef, basename, state }: ToolpadAppProps
 
   const authContext = useAuth({ dom, basename });
 
+  const appHost = useNonNullableContext(AppHostContext);
+  const showPreviewHeader: boolean = !!appHost?.isPreview && !IS_RENDERED_IN_CANVAS;
+
   return (
     <BrowserRouter basename={basename}>
       <UseDataProviderContext.Provider value={useDataProvider}>
         <AppThemeProvider dom={dom}>
           <CssBaseline enableColorScheme />
-          {SHOW_PREVIEW_HEADER ? <PreviewHeader basename={basename} /> : null}
-          <AppRoot ref={rootRef}>
+          {showPreviewHeader ? <PreviewHeader basename={basename} /> : null}
+          <AppRoot
+            ref={rootRef}
+            sx={{
+              paddingTop: showPreviewHeader ? `${PREVIEW_HEADER_HEIGHT}px` : 0,
+            }}
+          >
             <ComponentsContextProvider value={components}>
               <DomContextProvider value={dom}>
                 <ErrorBoundary FallbackComponent={AppError}>
@@ -1651,7 +1674,13 @@ export default function ToolpadApp({ rootRef, basename, state }: ToolpadAppProps
                             <Route path="/signin" element={<SignInPage />} />
                             <Route
                               path="*"
-                              element={<ToolpadAppLayout dom={dom} basename={basename} />}
+                              element={
+                                <ToolpadAppLayout
+                                  dom={dom}
+                                  basename={basename}
+                                  clipped={showPreviewHeader}
+                                />
+                              }
                             />
                           </Routes>
                         </AuthContext.Provider>
