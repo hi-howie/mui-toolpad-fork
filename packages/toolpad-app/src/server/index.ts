@@ -503,7 +503,7 @@ export async function runApp({
 
   if (dev) {
     try {
-      openBrowser(toolpadUrl);
+      // openBrowser(toolpadUrl);
     } catch (err: any) {
       console.error(`${chalk.red('error')} - Failed to open browser: ${err.message}`);
     }
