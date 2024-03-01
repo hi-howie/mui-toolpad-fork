@@ -1,12 +1,6 @@
 import * as React from 'react';
 import { ToolpadComponent } from '@mui/toolpad-core';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import {
-  FORM_COMPONENT_ID,
-  PAGE_COLUMN_COMPONENT_ID,
-  PAGE_ROW_COMPONENT_ID,
-  STACK_COMPONENT_ID,
-} from '../../runtime/toolpadComponents';
 import { useProject } from '../../project';
 
 export interface ToolpadComponentDefinition {

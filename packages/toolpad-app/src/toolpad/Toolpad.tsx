@@ -15,9 +15,12 @@ import { APP_FUNCTIONS_ROUTE } from '../routes';
 import ToolpadShell from './ToolpadShell';
 import { getViewFromPathname } from '../utils/domView';
 import AppProvider, { AppState, useAppStateContext } from './AppState';
+import FunctionsEditor from './FunctionsEditor';
 import { FEATURE_FLAG_GLOBAL_FUNCTIONS } from '../constants';
 import { ProjectProvider } from '../project';
 import AppAuthorizationDialog from './AppEditor/AppAuthorizationEditor';
+import { ToolpadAppRoutes } from '../runtime/ToolpadApp';
+import { RuntimeState } from '../runtime';
 
 const Centered = styled('div')({
   height: '100%',
@@ -146,11 +149,11 @@ const queryClient = new QueryClient({
   },
 });
 
-interface ToolpadEditorContentProps {
+export interface ToolpadEditorRoutesProps {
   appUrl: string;
 }
 
-function ToolpadEditorContent({ appUrl }: ToolpadEditorContentProps) {
+export function ToolpadEditorRoutes({ appUrl }: ToolpadEditorRoutesProps) {
   return (
     <ThemeProvider>
       {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
@@ -165,7 +168,7 @@ function ToolpadEditorContent({ appUrl }: ToolpadEditorContentProps) {
                   <EditorShell>
                     <Routes>
                       {FEATURE_FLAG_GLOBAL_FUNCTIONS ? (
-                        <Route path={APP_FUNCTIONS_ROUTE} element={<div />} />
+                        <Route path={APP_FUNCTIONS_ROUTE} element={<FunctionsEditor />} />
                       ) : null}
                       <Route path="*" element={<AppEditor />} />
                     </Routes>
@@ -180,15 +183,31 @@ function ToolpadEditorContent({ appUrl }: ToolpadEditorContentProps) {
   );
 }
 
-export interface ToolpadProps {
+export interface ToolpadEditorProps {
+  basename: string;
+  state: RuntimeState;
+}
+
+export function ToolpadEditor({ basename, state }: ToolpadEditorProps) {
+  return (
+    <BrowserRouter basename={basename}>
+      <Routes>
+        <Route path="/editor/*" element={<ToolpadEditorRoutes appUrl={basename} />} />
+        <Route path="/*" element={<ToolpadAppRoutes basename={basename} state={state} />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export interface ToolpadEditorLegacyProps {
   basename: string;
   appUrl: string;
 }
 
-export default function ToolpadEditor({ basename, appUrl }: ToolpadProps) {
+export default function ToolpadEditorLegacy({ basename, appUrl }: ToolpadEditorLegacyProps) {
   return (
     <BrowserRouter basename={basename}>
-      <ToolpadEditorContent appUrl={appUrl} />
+      <ToolpadEditorRoutes appUrl={appUrl} />
     </BrowserRouter>
   );
 }
