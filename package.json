@@ -30,7 +30,7 @@
     "test:argos": "node ./scripts/pushArgos.mjs",
     "test": "lerna run test",
     "check-types": "lerna run check-types",
-    "toolpad": "node --enable-source-maps packages/toolpad-app/cli.mjs --port 8080",
+    "toolpad": "node --enable-source-maps packages/toolpad-app/cli.mjs --port 8080 --dev",
     "jsonSchemas": "tsx ./scripts/docs/generateJsonSchemas.ts",
     "update-monorepo": "tsx ./scripts/updateMonorepo.ts",
     "monorepo:update": "tsx ./scripts/updateMonorepo.ts",
