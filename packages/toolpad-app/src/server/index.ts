@@ -29,6 +29,8 @@ import { createRpcServer as createProjectRpcServer } from './projectRpcServer';
 import { createRpcServer as createRuntimeRpcServer } from './runtimeRpcServer';
 import { createAuthHandler, createRequireAuthMiddleware, getRequireAuthentication } from './auth';
 
+export { initProject };
+
 // crypto must be polyfilled to use @auth/core in Node 18 or lower
 globalThis.crypto ??= (await import('node:crypto')) as Crypto;
 
@@ -190,7 +192,7 @@ interface AppHandler {
   dispose: () => Promise<void>;
 }
 
-async function createToolpadAppHandler(project: ToolpadProject): Promise<AppHandler> {
+export async function createToolpadAppHandler(project: ToolpadProject): Promise<AppHandler> {
   const appHandler = project.options.dev
     ? await createDevHandler(project)
     : await createProdHandler(project);

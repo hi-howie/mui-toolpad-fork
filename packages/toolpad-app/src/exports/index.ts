@@ -1,1 +1,1 @@
-export { createHandler } from '../server/index';
+export { initProject, createHandler, createToolpadAppHandler } from '../server/index';

@@ -11,5 +11,8 @@
     "**/docs/public/_redirects": "plaintext"
   },
   "typescript.tsdk": "node_modules/typescript/lib",
-  "cSpell.words": ["Toolpad"]
+  "cSpell.words": ["Toolpad"],
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }

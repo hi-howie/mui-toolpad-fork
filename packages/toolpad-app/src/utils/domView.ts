@@ -44,11 +44,13 @@ export type DomView = {
 };
 
 const PREFIX = process.env.EXPERIMENTAL_INLINE_CANVAS ? '/editor' : '';
+/* eslint no-underscore-dangle: 0 */
+const BASE = window.__TOOLPAD_APP_URL__;
 
 export function getPathnameFromView(view: DomView): string {
   switch (view.kind) {
     case 'page':
-      return view.name ? `${PREFIX}/app/pages/${view.name}` : `${PREFIX}/app/pages`;
+      return view.name ? `${PREFIX}${BASE}/pages/${view.name}` : `${PREFIX}${BASE}/pages`;
     default:
       throw new Error(`Unknown view "${(view as DomView).kind}".`);
   }
