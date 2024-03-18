@@ -57,7 +57,7 @@ export function getPathnameFromView(view: DomView): string {
 }
 
 export function getViewFromPathname(pathname: string): DomView | null {
-  const pageRouteMatch = matchPath(`${PREFIX}/app/pages/:pageName`, pathname);
+  const pageRouteMatch = matchPath(`${PREFIX}${BASE}/pages/:pageName`, pathname);
   if (pageRouteMatch?.params.pageName) {
     return {
       kind: 'page',
