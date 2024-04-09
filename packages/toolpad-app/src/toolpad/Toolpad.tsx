@@ -5,9 +5,14 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import CloudDoneIcon from '@mui/icons-material/CloudDone';
 import SyncIcon from '@mui/icons-material/Sync';
+import Drawer from '@mui/material/Drawer';
 import SyncProblemIcon from '@mui/icons-material/SyncProblem';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import useBoolean from '@mui/toolpad-utils/hooks/useBoolean';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
 import AppEditor from './AppEditor';
 import ErrorAlert from './AppEditor/PageEditor/ErrorAlert';
 import { ThemeProvider } from '../ThemeContext';
@@ -104,6 +109,15 @@ function EditorShell({ children }: EditorShellProps) {
     setFalse: handleAuthorizationDialogClose,
   } = useBoolean(false);
 
+  const {
+    value: pubishDrawerOpen,
+    setTrue: handlePubishDrawerOpen,
+    setFalse: handlePubishDrawerClose,
+  } = useBoolean(false);
+
+  const pathMatch = location.pathname.match(/\/(.*)\/pages/);
+  const versionId = pathMatch ? pathMatch[1] : null;
+
   return (
     <ToolpadShell
       navigation={
@@ -124,6 +138,9 @@ function EditorShell({ children }: EditorShellProps) {
             >
               Preview
             </Button>
+            <Button variant="outlined" color="primary" onClick={handlePubishDrawerOpen}>
+              Diff
+            </Button>
           </Stack>
         ) : null
       }
@@ -134,6 +151,25 @@ function EditorShell({ children }: EditorShellProps) {
         open={authorizationDialogOpen}
         onClose={handleAuthorizationDialogClose}
       />
+
+      <Dialog fullWidth open={pubishDrawerOpen} onClose={handlePubishDrawerClose} maxWidth="lg">
+        <DialogTitle>Diff</DialogTitle>
+        <DialogContent>
+          <iframe
+            src={`/diff/${versionId}`}
+            title="Diff"
+            width="100%"
+            height="600px"
+            style={{ border: 'none' }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handlePubishDrawerClose}>Disagree</Button>
+          <Button onClick={handlePubishDrawerClose} autoFocus>
+            Agree
+          </Button>
+        </DialogActions>
+      </Dialog>
     </ToolpadShell>
   );
 }
