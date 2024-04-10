@@ -1,15 +1,15 @@
-[submodule "packages/dashboard-components"]
-	path = packages/dashboard-components
-	url = git@bitbucket.org:elestyle-web/dashboard-components.git
-[submodule "packages/dashboard-core"]
-	path = packages/dashboard-core
-	url = git@bitbucket.org:elestyle-web/dashboard-core.git
-[submodule "packages/toolpad-dashboard"]
-	path = packages/toolpad-dashboard
-	url = git@bitbucket.org:elestyle-web/toolpad-dashboard.git
-[submodule "packages/dashboard-app"]
-	path = packages/dashboard-app
-	url = git@bitbucket.org:elestyle-web/dashboard-app.git
-[submodule "packages/dashboard-editor"]
-	path = packages/dashboard-editor
-	url = git@bitbucket.org:elestyle-web/dashboard-editor.git
+[submodule "packages/elestyle-studio-components"]
+	path = packages/elestyle-studio-components
+	url = git@bitbucket.org:elestyle-web/elestyle-studio-components.git
+[submodule "packages/elestyle-components"]
+	path = packages/elestyle-components
+	url = git@bitbucket.org:elestyle-web/elestyle-components.git
+[submodule "packages/elestyle-studio"]
+	path = packages/elestyle-studio
+	url = git@bitbucket.org:elestyle-web/elestyle-studio.git
+[submodule "packages/elestyle-studio-core"]
+	path = packages/elestyle-studio-core
+	url = git@bitbucket.org:elestyle-web/elestyle-studio-core.git
+[submodule "packages/elestyle-studio-runtime"]
+	path = packages/elestyle-studio-runtime
+	url = git@bitbucket.org:elestyle-web/elestyle-studio-runtime.git

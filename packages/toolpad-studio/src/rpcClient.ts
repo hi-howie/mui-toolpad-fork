@@ -12,7 +12,7 @@ import {
   UseSuspenseQueryOptions,
   UseSuspenseQueryResult,
 } from '@tanstack/react-query';
-import request from '@elestyle/dashboard-core/request';
+import request from '@elestyle/studio-core/request';
 import type { MethodsOf, RpcRequest, RpcResponse, MethodResolvers, Methods } from './server/rpc';
 
 export function createRpcClient<D extends MethodResolvers>(endpoint: string | URL): MethodsOf<D> {

@@ -41,8 +41,8 @@
     }
   },
   "dependencies": {
-    "@elestyle/dashboard-core": "workspace:^",
-    "@elestyle/toolpad-dashboard": "workspace:^",
+    "@elestyle/studio-core": "workspace:^",
+    "@elestyle/studio-components": "workspace:^",
     "@auth/core": "0.28.2",
     "@emotion/cache": "11.11.0",
     "@emotion/react": "11.11.4",

@@ -61,7 +61,7 @@ import {
 // import ErrorIcon from '@mui/icons-material/Error';
 import { getBrowserRuntime } from '@toolpad/studio-runtime/jsBrowserRuntime';
 // import * as builtIns from '@toolpad/studio-components';
-import * as builtIns from '@elestyle/toolpad-dashboard';
+import * as builtIns from '@elestyle/studio-components';
 import { errorFrom } from '@toolpad/utils/errors';
 import useBoolean from '@toolpad/utils/hooks/useBoolean';
 import usePageTitle from '@toolpad/utils/hooks/usePageTitle';
