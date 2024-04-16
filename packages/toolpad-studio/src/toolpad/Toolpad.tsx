@@ -115,6 +115,8 @@ function EditorShell({ children }: EditorShellProps) {
 
   const pathMatch = location.pathname.match(/\/(.*)\/pages/);
   const versionId = pathMatch ? pathMatch[1] : null;
+  const arr = versionId?.split('-');
+  arr?.pop();
 
   return (
     <ToolpadShell
@@ -136,8 +138,16 @@ function EditorShell({ children }: EditorShellProps) {
             >
               Preview
             </Button>
+            <Button
+              variant="outlined"
+              color="primary"
+              component="a"
+              href={`/versions/${arr?.join('-') || ''}`}
+            >
+              Versions
+            </Button>
             <Button variant="outlined" color="primary" onClick={handlePubishDrawerOpen}>
-              Diff
+              Commit
             </Button>
           </Stack>
         ) : null
@@ -154,7 +164,7 @@ function EditorShell({ children }: EditorShellProps) {
         <DialogTitle>Diff</DialogTitle>
         <DialogContent>
           <iframe
-            src={`/diff/${versionId}`}
+            src={`/version/diff/${versionId}`}
             title="Diff"
             width="100%"
             height="600px"
@@ -162,10 +172,7 @@ function EditorShell({ children }: EditorShellProps) {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handlePubishDrawerClose}>Disagree</Button>
-          <Button onClick={handlePubishDrawerClose} autoFocus>
-            Agree
-          </Button>
+          <Button onClick={handlePubishDrawerClose}>Close</Button>
         </DialogActions>
       </Dialog>
     </ToolpadShell>
