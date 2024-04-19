@@ -113,10 +113,8 @@ function EditorShell({ children }: EditorShellProps) {
     setFalse: handlePubishDrawerClose,
   } = useBoolean(false);
 
-  const pathMatch = location.pathname.match(/\/(.*)\/pages/);
-  const versionId = pathMatch ? pathMatch[1] : null;
-  const arr = versionId?.split('-');
-  arr?.pop();
+  // eslint-disable-next-line dot-notation
+  const elestyleEnv = ((window as any)['__ELESTYLE_STUDIO_ENV'] as any) || {};
 
   return (
     <ToolpadShell
@@ -138,16 +136,8 @@ function EditorShell({ children }: EditorShellProps) {
             >
               Preview
             </Button>
-            <Button
-              variant="outlined"
-              color="primary"
-              component="a"
-              href={`/versions/${arr?.join('-') || ''}`}
-            >
-              Versions
-            </Button>
             <Button variant="outlined" color="primary" onClick={handlePubishDrawerOpen}>
-              Commit
+              Deploy
             </Button>
           </Stack>
         ) : null
@@ -161,11 +151,11 @@ function EditorShell({ children }: EditorShellProps) {
       />
 
       <Dialog fullWidth open={pubishDrawerOpen} onClose={handlePubishDrawerClose} maxWidth="lg">
-        <DialogTitle>Diff</DialogTitle>
+        <DialogTitle>Deploy</DialogTitle>
         <DialogContent>
           <iframe
-            src={`/version/diff/${versionId}`}
-            title="Diff"
+            src={`/version/diff/${elestyleEnv.versionId}`}
+            title="Deploy"
             width="100%"
             height="600px"
             style={{ border: 'none' }}

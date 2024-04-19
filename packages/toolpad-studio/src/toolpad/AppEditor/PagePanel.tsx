@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { styled, SxProps, Box, Divider, Typography } from '@mui/material';
+import { styled, SxProps, Box, Divider, Select, MenuItem } from '@mui/material';
 import * as appDom from '@toolpad/studio-runtime/appDom';
 import { Panel, PanelGroup, PanelResizeHandle } from '../../components/resizablePanels';
 import PagesExplorer from './PagesExplorer';
@@ -7,7 +7,6 @@ import PageHierarchyExplorer from './HierarchyExplorer';
 import { useAppState } from '../AppState';
 import AppOptions from '../AppOptions';
 import { QueriesExplorer, ActionsExplorer } from './PageEditor/QueriesExplorer';
-import { useProject } from '../../project';
 
 const PAGE_PANEL_WIDTH = 250;
 
@@ -23,10 +22,12 @@ export interface ComponentPanelProps {
 }
 
 export default function PagePanel({ className, sx }: ComponentPanelProps) {
-  const project = useProject();
   const { dom, currentView } = useAppState();
 
   const currentPageNode = currentView?.name ? appDom.getPageByName(dom, currentView.name) : null;
+
+  // eslint-disable-next-line dot-notation
+  const elestyleEnv = ((window as any)['__ELESTYLE_STUDIO_ENV'] as any) || {};
 
   return (
     <PagePanelRoot className={className} sx={sx}>
@@ -41,7 +42,22 @@ export default function PagePanel({ className, sx }: ComponentPanelProps) {
           alignItems: 'center',
         }}
       >
-        <Typography noWrap>{project.rootDir.split(/[/\\]/).pop()}</Typography>
+        <Select
+          value={elestyleEnv.versionId}
+          sx={{ width: '90%' }}
+          onChange={(event) => {
+            const arr = window.location.href.split(/[/\\]/).slice(0, -3);
+            arr.push(event.target.value);
+            arr.push('pages');
+            window.location.href = arr.join('/');
+          }}
+        >
+          {(elestyleEnv.versions || []).map((version: any) => (
+            <MenuItem key={version.versionId} value={version.versionId}>
+              {version.versionName}
+            </MenuItem>
+          ))}
+        </Select>
 
         <AppOptions dom={dom} />
       </Box>
