@@ -9,6 +9,7 @@ import SyncProblemIcon from '@mui/icons-material/SyncProblem';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import useBoolean from '@toolpad/utils/hooks/useBoolean';
 import Dialog from '@mui/material/Dialog';
+import { LoadingButton } from '@mui/lab';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
@@ -92,6 +93,9 @@ function EditorShell({ children }: EditorShellProps) {
 
   const location = useLocation();
 
+  // eslint-disable-next-line dot-notation
+  const elestyleEnv = ((window as any)['__ELESTYLE_STUDIO_ENV'] as any) || {};
+
   const previewPath: string | null = React.useMemo(() => {
     const currentView = getViewFromPathname(location.pathname);
     if (!currentView) {
@@ -108,13 +112,37 @@ function EditorShell({ children }: EditorShellProps) {
   } = useBoolean(false);
 
   const {
-    value: pubishDrawerOpen,
-    setTrue: handlePubishDrawerOpen,
-    setFalse: handlePubishDrawerClose,
+    value: commitDrawerOpen,
+    setTrue: handleCommitDrawerOpen,
+    setFalse: handleCommitDrawerClose,
   } = useBoolean(false);
 
-  // eslint-disable-next-line dot-notation
-  const elestyleEnv = ((window as any)['__ELESTYLE_STUDIO_ENV'] as any) || {};
+  const {
+    value: deployDrawerOpen,
+    setTrue: handleDeployDrawerOpen,
+    setFalse: handleDeployDrawerClose,
+  } = useBoolean(false);
+
+  const [resetLoading, setResetLoading] = React.useState(false);
+  const [commitLoading, setCommitLoading] = React.useState(false);
+
+  function handleReset() {
+    setResetLoading(true);
+    fetch(`/api/versions/reset/${elestyleEnv.versionId}`, { method: 'POST' })
+      .then(() => {
+        handleCommitDrawerClose();
+      })
+      .finally(() => setResetLoading(false));
+  }
+
+  function handleCommit() {
+    setCommitLoading(true);
+    fetch(`/api/versions/commit/${elestyleEnv.versionId}`, { method: 'POST' })
+      .then(() => {
+        handleCommitDrawerClose();
+      })
+      .finally(() => setCommitLoading(false));
+  }
 
   return (
     <ToolpadShell
@@ -136,7 +164,10 @@ function EditorShell({ children }: EditorShellProps) {
             >
               Preview
             </Button>
-            <Button variant="outlined" color="primary" onClick={handlePubishDrawerOpen}>
+            <Button variant="outlined" color="primary" onClick={handleCommitDrawerOpen}>
+              Commit
+            </Button>
+            <Button variant="outlined" color="primary" onClick={handleDeployDrawerOpen}>
               Deploy
             </Button>
           </Stack>
@@ -150,19 +181,41 @@ function EditorShell({ children }: EditorShellProps) {
         onClose={handleAuthorizationDialogClose}
       />
 
-      <Dialog fullWidth open={pubishDrawerOpen} onClose={handlePubishDrawerClose} maxWidth="lg">
-        <DialogTitle>Deploy</DialogTitle>
+      <Dialog fullWidth open={commitDrawerOpen} onClose={handleCommitDrawerClose} maxWidth="lg">
+        <DialogTitle>Commit</DialogTitle>
         <DialogContent>
           <iframe
             src={`/version/diff/${elestyleEnv.versionId}`}
-            title="Deploy"
+            title="Commit"
             width="100%"
             height="600px"
             style={{ border: 'none' }}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handlePubishDrawerClose}>Close</Button>
+          <Button onClick={handleCommitDrawerClose}>Close</Button>
+          <LoadingButton color="secondary" loading={resetLoading} onClick={handleReset}>
+            Reset
+          </LoadingButton>
+          <LoadingButton color="error" loading={commitLoading} onClick={handleCommit}>
+            Commit
+          </LoadingButton>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog fullWidth open={deployDrawerOpen} onClose={handleDeployDrawerClose} maxWidth="lg">
+        <DialogTitle>Deploy</DialogTitle>
+        <DialogContent>
+          <iframe
+            src={`/version/diff/${elestyleEnv.versionId}`}
+            title="Commit"
+            width="100%"
+            height="600px"
+            style={{ border: 'none' }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeployDrawerClose}>Close</Button>
         </DialogActions>
       </Dialog>
     </ToolpadShell>
