@@ -128,7 +128,7 @@ function EditorShell({ children }: EditorShellProps) {
 
   function handleReset() {
     setResetLoading(true);
-    fetch(`/api/versions/reset/${elestyleEnv.versionId}`, { method: 'POST' })
+    fetch(`/api/version/reset/${elestyleEnv.versionId}`, { method: 'POST' })
       .then(() => {
         handleCommitDrawerClose();
       })
@@ -137,7 +137,7 @@ function EditorShell({ children }: EditorShellProps) {
 
   function handleCommit() {
     setCommitLoading(true);
-    fetch(`/api/versions/commit/${elestyleEnv.versionId}`, { method: 'POST' })
+    fetch(`/api/version/commit/${elestyleEnv.versionId}`, { method: 'POST' })
       .then(() => {
         handleCommitDrawerClose();
       })
