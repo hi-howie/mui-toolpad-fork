@@ -1,8 +1,8 @@
 import {
   Stack,
+  Tooltip,
   Typography,
   Divider,
-  Tooltip,
   Link,
   ToggleButtonGroup,
   ToggleButton,
@@ -19,12 +19,21 @@ import { usePageEditorState } from './PageEditorProvider';
 import UrlQueryEditor from './UrlQueryEditor';
 import NodeNameEditor from '../NodeNameEditor';
 import PageTitleEditor from '../PageTitleEditor';
-import { UpgradeAlert } from '../UpgradeAlert';
 import PageDisplayNameEditor from '../PageDisplayNameEditor';
+import { UpgradeChip } from '../UpgradeNotification';
 
 const PAGE_DISPLAY_OPTIONS: { value: appDom.PageDisplayMode; label: string }[] = [
   { value: 'shell', label: 'App shell' },
   { value: 'standalone', label: 'No shell' },
+];
+
+const PAGE_CONTAINER_WIDTH_OPTIONS: { value: appDom.ContainerWidth; label: string }[] = [
+  { value: 'xs', label: 'xs' },
+  { value: 'sm', label: 'sm' },
+  { value: 'md', label: 'md' },
+  { value: 'lg', label: 'lg' },
+  { value: 'xl', label: 'xl' },
+  { value: 'none', label: 'None' },
 ];
 
 export default function PageOptionsPanel() {
@@ -37,10 +46,20 @@ export default function PageOptionsPanel() {
   const appNode = appDom.getApp(dom);
 
   const page = appDom.getNode(dom, pageNodeId, 'page');
+
   const handleDisplayModeChange = React.useCallback(
     (event: React.MouseEvent<HTMLElement>, newValue: appDom.PageDisplayMode) => {
       domApi.update((draft) =>
         appDom.setNodeNamespacedProp(draft, page, 'attributes', 'display', newValue),
+      );
+    },
+    [domApi, page],
+  );
+
+  const handleContainerModeChange = React.useCallback(
+    (event: React.MouseEvent<HTMLElement>, newValue: appDom.ContainerWidth) => {
+      domApi.update((draft) =>
+        appDom.setNodeNamespacedProp(draft, page, 'attributes', 'maxWidth', newValue),
       );
     },
     [domApi, page],
@@ -79,14 +98,14 @@ export default function PageOptionsPanel() {
 
   return (
     <Stack spacing={2} alignItems="stretch" data-testid="page-editor">
-      <Typography variant="subtitle1">Page:</Typography>
+      <Typography variant="subtitle1">Page</Typography>
       <div>
         <NodeNameEditor node={page} />
         <PageDisplayNameEditor node={page} />
         <PageTitleEditor node={page} />
       </div>
       <div>
-        <Typography variant="body2">Display mode:</Typography>
+        <Typography variant="overline">Display mode</Typography>
         <Tooltip
           arrow
           placement="left-start"
@@ -122,7 +141,41 @@ export default function PageOptionsPanel() {
         </Tooltip>
       </div>
       <div>
-        <Typography variant="body2">Authorization:</Typography>
+        <Typography variant="overline">Container width</Typography>
+        <Tooltip
+          arrow
+          placement="left-start"
+          title={
+            <Typography variant="inherit">
+              Set the maximum width of the top-level container.
+            </Typography>
+          }
+        >
+          <ToggleButtonGroup
+            exclusive
+            value={page.attributes.maxWidth ?? appDom.DEFAULT_CONTAINER_WIDTH}
+            onChange={handleContainerModeChange}
+            aria-label="Container mode"
+            fullWidth
+          >
+            {PAGE_CONTAINER_WIDTH_OPTIONS.map((option) => {
+              return (
+                <ToggleButton key={option.value} value={option.value}>
+                  {option.label}
+                </ToggleButton>
+              );
+            })}
+          </ToggleButtonGroup>
+        </Tooltip>
+      </div>
+      <div>
+        <Typography variant="overline">
+          Authorization
+          {!isPaidPlan ? (
+            <UpgradeChip message="Authorization requires a paid plan." sx={{ ml: 1 }} />
+          ) : null}
+        </Typography>
+
         {isPaidPlan ? (
           <React.Fragment>
             <FormControlLabel
@@ -142,17 +195,13 @@ export default function PageOptionsPanel() {
               )}
             />
           </React.Fragment>
-        ) : (
-          <UpgradeAlert feature="Role based access control" hideAction />
-        )}
+        ) : null}
       </div>
-      {appDom.isCodePage(page) ? null : (
-        <div>
-          <Divider variant="middle" sx={{ alignSelf: 'stretch' }} />
-          <Typography variant="overline">Page State:</Typography>
-          <UrlQueryEditor pageNodeId={pageNodeId} />
-        </div>
-      )}
+      <div>
+        <Divider variant="middle" sx={{ alignSelf: 'stretch' }} />
+        <Typography variant="overline">Page State</Typography>
+        <UrlQueryEditor pageNodeId={pageNodeId} />
+      </div>
     </Stack>
   );
 }

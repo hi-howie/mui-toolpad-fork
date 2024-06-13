@@ -13,6 +13,8 @@
       "@toolpad/utils/*": ["../toolpad-utils/dist/*"],
       "@elestyle/dashboard-core/*": ["../dashboard-core/dist/*"]
     },
+    "composite": true,
+    "tsBuildInfoFile": "./dist/tsconfig.json.tsbuildinfo",
     "target": "esnext",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
@@ -33,13 +35,7 @@
     "preserveWatchOutput": true,
     "incremental": true
   },
-  "include": [
-    "sentry.client.config.js",
-    "sentry.server.config.js",
-    "**/*.ts",
-    "**/*.tsx",
-    "typings/**/*.d.ts",
-    "scripts/*.mts"
-  ],
-  "exclude": ["node_modules", "./scripts", "./public"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "cli/**/*.ts", "cli/**/*.tsx", "typings/**/*.d.ts"],
+  "exclude": ["node_modules", "./scripts", "./public"],
+  "references": [{ "path": "../toolpad-utils" }, { "path": "../toolpad-studio-runtime" }]
 }

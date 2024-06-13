@@ -282,16 +282,3 @@ export function ToolpadEditor({ basename, state }: ToolpadEditorProps) {
     </BrowserRouter>
   );
 }
-
-export interface ToolpadEditorLegacyProps {
-  basename: string;
-  appUrl: string;
-}
-
-export default function ToolpadEditorLegacy({ basename, appUrl }: ToolpadEditorLegacyProps) {
-  return (
-    <BrowserRouter basename={basename}>
-      <ToolpadEditorRoutes appUrl={appUrl} />
-    </BrowserRouter>
-  );
-}

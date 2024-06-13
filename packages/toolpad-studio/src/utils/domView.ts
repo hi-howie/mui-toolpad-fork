@@ -43,21 +43,19 @@ export type DomView = {
   pageParametersDialogOpen?: boolean;
 };
 
-const PREFIX = process.env.EXPERIMENTAL_INLINE_CANVAS ? '/editor' : '';
-/* eslint no-underscore-dangle: 0 */
-const BASE = window.__TOOLPAD_APP_URL__;
+const PREFIX = '/editor';
 
 export function getPathnameFromView(view: DomView): string {
   switch (view.kind) {
     case 'page':
-      return view.name ? `${PREFIX}${BASE}/pages/${view.name}` : `${PREFIX}${BASE}/pages`;
+      return view.name ? `${PREFIX}/pages/${view.name}` : `${PREFIX}/pages`;
     default:
       throw new Error(`Unknown view "${(view as DomView).kind}".`);
   }
 }
 
 export function getViewFromPathname(pathname: string): DomView | null {
-  const pageRouteMatch = matchPath(`${PREFIX}${BASE}/pages/:pageName`, pathname);
+  const pageRouteMatch = matchPath(`${PREFIX}/pages/:pageName`, pathname);
   if (pageRouteMatch?.params.pageName) {
     return {
       kind: 'page',

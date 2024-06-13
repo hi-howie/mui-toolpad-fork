@@ -126,9 +126,19 @@ jobs:
       - checkout
       - install_js
       - run:
+          name: '`pnpm docs:typescript:formatted` changes committed?'
+          command: |
+            pnpm docs:typescript:formatted --disable-cache
+            pnpm check-changes
+      - run:
           name: '`pnpm prettier:all` changes committed?'
           command: |
             pnpm prettier:all
+            pnpm check-changes
+      - run:
+          name: '`pnpm proptypes` changes committed?'
+          command: |
+            pnpm proptypes
             pnpm check-changes
       - run:
           name: '`pnpm jsonSchemas` changes committed?'
@@ -155,12 +165,30 @@ jobs:
           name: Tests fake browser
           command: pnpm test
 
+  test_unit_browser:
+    <<: *default-job
+    docker:
+      - image: mcr.microsoft.com/playwright:v1.44.1-focal
+        environment:
+          NODE_ENV: test
+
+    steps:
+      - checkout
+      - install_js:
+          browsers: true
+      - run:
+          name: 'Build packages'
+          command: pnpm release:build
+      - run:
+          name: Tests real browser
+          command: pnpm test:browser
+
   test_integration:
     <<: *default-job
     resource_class: 'large'
     parallelism: 2
     docker:
-      - image: mcr.microsoft.com/playwright:v1.43.0-focal
+      - image: mcr.microsoft.com/playwright:v1.44.1-focal
         environment:
           NODE_ENV: test
           TOOLPAD_TEST_RETRIES: 1
@@ -202,6 +230,10 @@ workflows:
           requires:
             - checkout
       - test_unit:
+          <<: *default-context
+          requires:
+            - checkout
+      - test_unit_browser:
           <<: *default-context
           requires:
             - checkout

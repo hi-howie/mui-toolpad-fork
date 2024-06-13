@@ -74,6 +74,8 @@ async function getTestFixtureTempDir(
   { template, setup }: ProjectConfig = {},
 ) {
   const tmpTestDir = path.resolve(currentDirectory, `./.tmp-test-dir-${workerInfo.parallelIndex}`);
+  // Clean up leftover from previous run, if necessary
+  await fs.rm(tmpTestDir, { recursive: true, force: true });
   await fs.mkdir(tmpTestDir);
   // Each test runs in its own temporary folder to avoid race conditions when running tests in parallel.
   // It also avoids mutating the source code of the fixture while running the test.
@@ -163,6 +165,7 @@ export async function runCustomServer(
     stdout: process.stdout,
     [asyncDisposeSymbol]: async () => {
       process.env = origEnv;
+      child.catch(() => null);
       await child.kill();
     },
   };

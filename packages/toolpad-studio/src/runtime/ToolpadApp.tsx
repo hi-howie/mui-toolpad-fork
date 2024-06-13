@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import {
   Stack,
@@ -33,11 +35,18 @@ import {
   ApplicationVm,
   JsExpressionAttrValue,
   ComponentConfig,
+  CanvasEventsContext,
+  NodeErrorProps,
+  NodeRuntimeWrapper,
+  ResetNodeErrorsKeyProvider,
+  UseDataProviderContext,
+  AppHost,
+  useAppHost,
 } from '@toolpad/studio-runtime';
 import { useAssertedContext, useNonNullableContext } from '@toolpad/utils/react';
 import { mapProperties, mapValues } from '@toolpad/utils/collections';
 import { set as setObjectPath } from 'lodash-es';
-import { QueryClientProvider, useMutation } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import {
   Routes,
   Route,
@@ -68,6 +77,7 @@ import usePageTitle from '@toolpad/utils/hooks/usePageTitle';
 import invariant from 'invariant';
 import useEventCallback from '@mui/utils/useEventCallback';
 import * as appDom from '@toolpad/studio-runtime/appDom';
+import useSsr from '@toolpad/utils/hooks/useSsr';
 import { RuntimeState } from './types';
 import { getBindingType, getBindingValue } from './bindings';
 import {
@@ -82,23 +92,20 @@ import evalJsBindings, {
   EvaluatedBinding,
   ParsedBinding,
 } from './evalJsBindings';
-import { HTML_ID_EDITOR_OVERLAY, PREVIEW_HEADER_HEIGHT } from './constants';
+import { PREVIEW_HEADER_HEIGHT } from './constants';
 import { layoutBoxArgTypes } from './toolpadComponents/layoutBox';
 import { useDataQuery, UseFetch } from './useDataQuery';
 import { CanvasHooksContext, NavigateToPage } from './CanvasHooksContext';
 import PreviewHeader from './PreviewHeader';
 import { AppLayout } from './AppLayout';
 import { useDataProvider } from './useDataProvider';
-import { RuntimeApiContext, createApi, queryClient } from './api';
+import { RuntimeApiContext, createApi } from './api';
 import { AuthContext, useAuth, AuthSession } from './useAuth';
 import { RequireAuthorization } from './auth';
 import SignInPage from './SignInPage';
-import { AppHost, AppHostContext } from './AppHostContext';
-import { componentsStore, pageComponentsStore } from './globalState';
+import { componentsStore } from './globalState';
 
 const browserJsRuntime = getBrowserRuntime();
-
-export type PageComponents = Partial<Record<string, React.ComponentType>>;
 
 const Pre = styled('pre')(({ theme }) => ({
   margin: 0,
@@ -480,9 +487,9 @@ function parseBindings(
       for (const [propName, argType] of Object.entries(argTypes)) {
         invariant(argType, `Missing argType for prop "${propName}"`);
 
-        const initializerId = argType.defaultValueProp
-          ? `${elm.id}.props.${argType.defaultValueProp}`
-          : undefined;
+        const initializerExpression = argType.defaultValueProp
+          ? `${elm.name}.${argType.defaultValueProp}`
+          : JSON.stringify(getArgTypeDefaultValue(argType));
 
         const propValue: BindableAttrValue<any> = elm.props?.[propName];
 
@@ -505,7 +512,7 @@ function parseBindings(
             controlled.add(bindingId);
             parsedBindingsMap.set(bindingId, {
               scopePath,
-              initializer: initializerId,
+              initializer: initializerExpression,
             });
           } else {
             parsedBindingsMap.set(bindingId, parseBinding(binding, { scopePath }));
@@ -911,13 +918,14 @@ interface RenderedNodeContentProps {
   node: appDom.PageNode | appDom.ElementNode;
   childNodeGroups: appDom.NodeChildren<appDom.ElementNode>;
   Component: ToolpadComponent<any>;
+  staticProps?: Record<string, any>;
 }
 
 function RenderedNodeContent({
   node,
   childNodeGroups,
   Component,
-  ...rest
+  staticProps,
 }: RenderedNodeContentProps) {
   const { setControlledBinding } = React.useContext(SetBindingContext) ?? {};
   invariant(setControlledBinding, 'Node must be rendered in a RuntimeScoped context');
@@ -967,7 +975,10 @@ function RenderedNodeContent({
       }
 
       if (typeof hookResult[propName] === 'undefined' && argType) {
-        hookResult[propName] = getArgTypeDefaultValue(argType);
+        const defaultValue = getArgTypeDefaultValue(argType);
+        if (typeof defaultValue !== 'undefined') {
+          hookResult[propName] = getArgTypeDefaultValue(argType);
+        }
       }
     }
 
@@ -1094,14 +1105,14 @@ function RenderedNodeContent({
 
   const props: Record<string, any> = React.useMemo(() => {
     return {
+      ...staticProps,
       ...boundProps,
       ...onChangeHandlers,
       ...eventHandlers,
       ...layoutElementProps,
       ...reactChildren,
-      ...rest,
     };
-  }, [boundProps, eventHandlers, layoutElementProps, onChangeHandlers, reactChildren, rest]);
+  }, [staticProps, boundProps, eventHandlers, layoutElementProps, onChangeHandlers, reactChildren]);
 
   const previousProps = React.useRef<Record<string, any>>(props);
   const [hasSetInitialBindings, setHasSetInitialBindings] = React.useState(false);
@@ -1224,24 +1235,19 @@ function RenderedNodeContent({
 }
 
 interface PageRootProps {
+  maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'none';
   children?: React.ReactNode;
 }
 
 const PageRoot = React.forwardRef<HTMLDivElement, PageRootProps>(function PageRoot(
-  { children, ...props }: PageRootProps,
+  { children, maxWidth, ...props }: PageRootProps,
   ref,
 ) {
+  const containerMaxWidth =
+    maxWidth === 'none' ? false : maxWidth ?? appDom.DEFAULT_CONTAINER_WIDTH;
   return (
-    <Container ref={ref}>
-      <Stack
-        data-testid="page-root"
-        direction="column"
-        sx={{
-          my: 2,
-          gap: 1,
-        }}
-        {...props}
-      >
+    <Container ref={ref} maxWidth={containerMaxWidth}>
+      <Stack data-testid="page-root" direction="column" sx={{ my: 2, gap: 1 }} {...props}>
         {children}
       </Stack>
     </Container>
@@ -1253,6 +1259,11 @@ const PageRootComponent = createComponent(PageRoot, {
     children: {
       type: 'element',
       control: { type: 'slots' },
+    },
+    maxWidth: {
+      type: 'string',
+      enum: ['xs', 'sm', 'md', 'lg', 'xl', 'none'],
+      control: { type: 'ToggleButtons' },
     },
   },
 });
@@ -1391,17 +1402,6 @@ function FetchNode({ node, page }: FetchNodeProps) {
   }
 }
 
-interface RenderedProCodePageProps {
-  page: appDom.PageNode;
-}
-
-function RenderedProCodePage({ page }: RenderedProCodePageProps) {
-  usePageTitle(appDom.getPageTitle(page));
-  const pageComponents = pageComponentsStore.useValue();
-  const PageComponent = pageComponents[page.name] ?? PageNotFound;
-  return <PageComponent />;
-}
-
 interface RenderedLowCodePageProps {
   page: appDom.PageNode;
 }
@@ -1439,6 +1439,13 @@ export function RenderedLowCodePage({ page }: RenderedLowCodePageProps) {
 
   const applicationVm = useApplicationVm(onApplicationVmUpdate);
 
+  const pageProps = React.useMemo(
+    () => ({
+      maxWidth: page.attributes.maxWidth,
+    }),
+    [page.attributes.maxWidth],
+  );
+
   return (
     <ApplicationVmApiContext.Provider value={applicationVm}>
       <RuntimeScoped id={'global'} parseBindingsResult={parseBindingsResult} onUpdate={onUpdate}>
@@ -1446,6 +1453,7 @@ export function RenderedLowCodePage({ page }: RenderedLowCodePageProps) {
           node={page}
           childNodeGroups={{ children }}
           Component={PageRootComponent}
+          staticProps={pageProps}
         />
         {queries.map((node) => (
           <FetchNode key={node.id} page={page} node={node} />
@@ -1464,15 +1472,9 @@ export interface RenderedPageProps {
 }
 
 export function RenderedPage({ page }: RenderedPageProps) {
-  const appHost = useNonNullableContext(AppHostContext);
+  const appHost = useAppHost();
 
-  let pageContent = page.attributes.codeFile ? (
-    <RenderedProCodePage page={page} />
-  ) : (
-    // Make sure the page itself remounts when the route changes. This make sure all pageBindings are reinitialized
-    // during first render. Fixes https://github.com/mui/mui-toolpad/issues/1050
-    <RenderedLowCodePage page={page} key={page.name} />
-  );
+  let pageContent = <RenderedLowCodePage page={page} key={page.name} />;
 
   if (!appHost.isCanvas) {
     pageContent = (
@@ -1569,7 +1571,7 @@ function ToolpadAppLayout({ children }: ToolpadAppLayoutProps) {
     [pages, session],
   );
 
-  const appHost = useNonNullableContext(AppHostContext);
+  const appHost = useAppHost();
 
   const clipped = shouldShowPreviewHeader(appHost);
 
@@ -1673,7 +1675,7 @@ export function ToolpadAppProvider({
 
   const authContext = useAuth({ dom, basename, signInPagePath: '/signin' });
 
-  const appHost = useNonNullableContext(AppHostContext);
+  const appHost = useAppHost();
   const showPreviewHeader = shouldShowPreviewHeader(appHost);
 
   const canvasHooks = React.useContext(CanvasHooksContext);
@@ -1683,32 +1685,30 @@ export function ToolpadAppProvider({
   return (
     <RuntimeApiContext.Provider value={runtimeApi}>
       <UseDataProviderContext.Provider value={useDataProvider}>
-        <QueryClientProvider client={queryClient}>
-          <ComponentsContextProvider value={components}>
-            <DomContext.Provider value={dom}>
-              <AuthContext.Provider value={authContext}>
-                <ResetNodeErrorsKeyProvider value={resetNodeErrorsKey}>
-                  <AppThemeProvider dom={dom}>
-                    <CssBaseline enableColorScheme />
-                    {showPreviewHeader ? <PreviewHeader basename={basename} /> : null}
-                    <AppRoot
-                      ref={rootRef}
-                      sx={{
-                        paddingTop: showPreviewHeader ? `${PREVIEW_HEADER_HEIGHT}px` : 0,
-                      }}
-                    >
-                      <ErrorBoundary FallbackComponent={AppError}>
-                        <React.Suspense fallback={<AppLoading />}>{children}</React.Suspense>
-                      </ErrorBoundary>
-                      <EditorOverlay ref={canvasHooks.overlayRef} id={HTML_ID_EDITOR_OVERLAY} />
-                    </AppRoot>
-                  </AppThemeProvider>
-                </ResetNodeErrorsKeyProvider>
-              </AuthContext.Provider>
-              {showDevtools ? <ReactQueryDevtoolsProduction initialIsOpen={false} /> : null}
-            </DomContext.Provider>
-          </ComponentsContextProvider>
-        </QueryClientProvider>
+        <ComponentsContextProvider value={components}>
+          <DomContext.Provider value={dom}>
+            <AuthContext.Provider value={authContext}>
+              <ResetNodeErrorsKeyProvider value={resetNodeErrorsKey}>
+                <AppThemeProvider dom={dom}>
+                  <CssBaseline enableColorScheme />
+                  {showPreviewHeader ? <PreviewHeader /> : null}
+                  <AppRoot
+                    ref={rootRef}
+                    sx={{
+                      paddingTop: showPreviewHeader ? `${PREVIEW_HEADER_HEIGHT}px` : 0,
+                    }}
+                  >
+                    <ErrorBoundary FallbackComponent={AppError}>
+                      <React.Suspense fallback={<AppLoading />}>{children}</React.Suspense>
+                    </ErrorBoundary>
+                    <EditorOverlay ref={canvasHooks.overlayRef} />
+                  </AppRoot>
+                </AppThemeProvider>
+              </ResetNodeErrorsKeyProvider>
+            </AuthContext.Provider>
+            {showDevtools ? <ReactQueryDevtoolsProduction initialIsOpen={false} /> : null}
+          </DomContext.Provider>
+        </ComponentsContextProvider>
       </UseDataProviderContext.Provider>
     </RuntimeApiContext.Provider>
   );
@@ -1745,7 +1745,8 @@ export function ToolpadAppRoutes(props: ToolpadAppProps) {
 }
 
 export default function ToolpadApp(props: ToolpadAppProps) {
-  return (
+  const isSsr = useSsr();
+  return isSsr ? null : (
     <BrowserRouter basename={props.basename}>
       <Routes>
         <Route
